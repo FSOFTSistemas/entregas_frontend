@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
+
+
 const Dashboard = () => {
   const { user } = useAuth();
   const [entregas, setEntregas] = useState([]);
@@ -99,7 +101,6 @@ const Dashboard = () => {
 
   const entregasPendentes = entregas.filter(e => e.status === 'pendente');
   const entregasEntregues = entregas.filter(e => e.status === 'entregue');
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -110,7 +111,8 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Stats Cards */}
+
+      {user?.tipo_usuario !== 'entregador' && (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -164,6 +166,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+      )}
 
       {/* Entregas Tabs */}
       <Tabs defaultValue="pendentes" className="space-y-4">
@@ -269,4 +272,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

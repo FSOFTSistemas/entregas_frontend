@@ -28,7 +28,7 @@ const Layout = ({ children }) => {
     { path: '/', icon: Home, label: 'Dashboard', roles: ['master', 'admin', 'entregador'] },
     { path: '/produtos', icon: Package, label: 'Produtos', roles: ['master', 'admin'] },
     { path: '/usuarios', icon: Users, label: 'Usuários', roles: ['master', 'admin'] },
-    { path: '/entregas', icon: Truck, label: 'Entregas', roles: ['master', 'admin', 'entregador'] },
+    { path: '/entregas', icon: Truck, label: 'Entregas', roles: ['master', 'admin'] },
     { path: '/empresas', icon: Building2, label: 'Empresas', roles: ['master'] },
   ];
 

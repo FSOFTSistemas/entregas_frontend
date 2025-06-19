@@ -8,10 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Edit,
+  Trash2,
   Users,
   Search,
   Loader2,
@@ -37,10 +37,21 @@ const UsuariosPage = () => {
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [empresas, setEmpresas] = useState([]);
 
   useEffect(() => {
     fetchUsuarios();
+    fetchEmpresas();
   }, []);
+
+  const fetchEmpresas = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/empresas/');
+      setEmpresas(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar empresas:', error);
+    }
+  };
 
   const fetchUsuarios = async () => {
     try {
@@ -62,7 +73,6 @@ const UsuariosPage = () => {
     try {
       const data = {
         ...formData,
-        empresa_id: user?.empresa_id
       };
 
       // Se estiver editando e não forneceu nova senha, remover do payload
@@ -161,7 +171,7 @@ const UsuariosPage = () => {
             Gerencie os usuários do sistema
           </p>
         </div>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setIsDialogOpen(true)}>
@@ -175,45 +185,45 @@ const UsuariosPage = () => {
                 {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
               </DialogTitle>
               <DialogDescription>
-                {editingUsuario 
+                {editingUsuario
                   ? 'Atualize as informações do usuário'
                   : 'Adicione um novo usuário ao sistema'
                 }
               </DialogDescription>
             </DialogHeader>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="nome">Nome</Label>
                 <Input
                   id="nome"
                   value={formData.nome}
-                  onChange={(e) => setFormData({...formData, nome: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                   placeholder="Nome completo"
                   required
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="email@exemplo.com"
                   required
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="senha">
                   Senha {editingUsuario && '(deixe em branco para manter a atual)'}
@@ -222,18 +232,18 @@ const UsuariosPage = () => {
                   id="senha"
                   type="password"
                   value={formData.senha}
-                  onChange={(e) => setFormData({...formData, senha: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
                   placeholder="Senha"
                   required={!editingUsuario}
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="tipo_usuario">Tipo de Usuário</Label>
-                <Select 
-                  value={formData.tipo_usuario} 
-                  onValueChange={(value) => setFormData({...formData, tipo_usuario: value})}
+                <Select
+                  value={formData.tipo_usuario}
+                  onValueChange={(value) => setFormData({ ...formData, tipo_usuario: value })}
                   disabled={isSubmitting}
                 >
                   <SelectTrigger>
@@ -248,11 +258,33 @@ const UsuariosPage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
+              {user?.tipo_usuario === 'master' && (
+                <div className="space-y-2">
+                  <Label htmlFor="empresa_id">Empresa</Label>
+                  <Select
+                    value={formData.empresa_id}
+                    onValueChange={(value) => setFormData({ ...formData, empresa_id: value })}
+                    disabled={isSubmitting}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a empresa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {empresas.map((empresa) => (
+                        <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                          {empresa.razao_social}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="flex justify-end gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={handleCloseDialog}
                   disabled={isSubmitting}
                 >
