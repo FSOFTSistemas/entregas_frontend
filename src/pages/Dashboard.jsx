@@ -38,7 +38,7 @@ const Dashboard = () => {
 
   const fetchEntregas = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/entregas');
+      const response = await axios.get('http://localhost:4100/api/entregas');
       const entregasData = response.data;
       setEntregas(entregasData);
       
@@ -65,7 +65,7 @@ const Dashboard = () => {
 
   const confirmarSelecionarEntrega = async (entregaId) => {
     try {
-      await axios.put(`http://localhost:3001/api/entregas/${entregaId}`, {
+      await axios.put(`http://localhost:4100/api/entregas/${entregaId}`, {
         entregador_id: user.id,
         status: 'entregue'
       });
@@ -89,7 +89,7 @@ const Dashboard = () => {
   const confirmarExclusaoEntrega = async () => {
     if (!entregaParaExcluir) return;
     try {
-      await axios.delete(`http://localhost:3001/api/entregas/${entregaParaExcluir.id}`);
+      await axios.delete(`http://localhost:4100/api/entregas/${entregaParaExcluir.id}`);
       fetchEntregas();
       setIsDeleteModalOpen(false);
       setEntregaParaExcluir(null);

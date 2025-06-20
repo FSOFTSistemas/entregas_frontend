@@ -41,7 +41,7 @@ const Empresas = () => {
 
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/empresas');
+      const response = await axios.get('http://localhost:4100/api/empresas');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Erro ao carregar empresas:', error);
@@ -58,9 +58,9 @@ const Empresas = () => {
 
     try {
       if (editingEmpresa) {
-        await axios.put(`http://localhost:3001/api/empresas/${editingEmpresa.id}`, formData);
+        await axios.put(`http://localhost:4100/api/empresas/${editingEmpresa.id}`, formData);
       } else {
-        await axios.post('http://localhost:3001/api/empresas', formData);
+        await axios.post('http://localhost:4100/api/empresas', formData);
       }
 
       await fetchEmpresas();
@@ -87,7 +87,7 @@ const Empresas = () => {
     if (!confirm('Tem certeza que deseja deletar esta empresa?')) return;
 
     try {
-      await axios.delete(`http://localhost:3001/api/empresas/${id}`);
+      await axios.delete(`http://localhost:4100/api/empresas/${id}`);
       await fetchEmpresas();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar empresa');

@@ -46,7 +46,7 @@ const UsuariosPage = () => {
 
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/empresas/');
+      const response = await axios.get('http://localhost:4100/api/empresas/');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Erro ao carregar empresas:', error);
@@ -55,7 +55,7 @@ const UsuariosPage = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/usuarios');
+      const response = await axios.get('http://localhost:4100/api/usuarios');
       setUsuarios(response.data);
     } catch (error) {
       console.error('Erro ao carregar usuários:', error);
@@ -81,9 +81,9 @@ const UsuariosPage = () => {
       }
 
       if (editingUsuario) {
-        await axios.put(`http://localhost:3001/api/usuarios/${editingUsuario.id}`, data);
+        await axios.put(`http://localhost:4100/api/usuarios/${editingUsuario.id}`, data);
       } else {
-        await axios.post('http://localhost:3001/api/usuarios', data);
+        await axios.post('http://localhost:4100/api/usuarios', data);
       }
 
       await fetchUsuarios();
@@ -111,7 +111,7 @@ const UsuariosPage = () => {
     if (!confirm('Tem certeza que deseja deletar este usuário?')) return;
 
     try {
-      await axios.delete(`http://localhost:3001/api/usuarios/${id}`);
+      await axios.delete(`http://localhost:4100/api/usuarios/${id}`);
       await fetchUsuarios();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar usuário');

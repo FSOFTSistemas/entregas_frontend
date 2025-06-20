@@ -57,9 +57,9 @@ const Entregas = () => {
   const fetchData = async () => {
     try {
       const [entregasRes, produtosRes, usuariosRes] = await Promise.all([
-        axios.get('http://localhost:3001/api/entregas'),
-        axios.get('http://localhost:3001/api/produtos'),
-        axios.get('http://localhost:3001/api/usuarios')
+        axios.get('http://localhost:4100/api/entregas'),
+        axios.get('http://localhost:4100/api/produtos'),
+        axios.get('http://localhost:4100/api/usuarios')
       ]);
 
       setEntregas(entregasRes.data);
@@ -88,9 +88,9 @@ const Entregas = () => {
       console.log(data);
 
       if (editingEntrega) {
-        await axios.put(`http://localhost:3001/api/entregas/${editingEntrega.id}`, data);
+        await axios.put(`http://localhost:4100/api/entregas/${editingEntrega.id}`, data);
       } else {
-        await axios.post('http://localhost:3001/api/entregas', data);
+        await axios.post('http://localhost:4100/api/entregas', data);
       }
 
       await fetchData();
@@ -121,7 +121,7 @@ const Entregas = () => {
     if (!confirm('Tem certeza que deseja deletar esta entrega?')) return;
 
     try {
-      await axios.delete(`http://localhost:3001/api/entregas/${id}`);
+      await axios.delete(`http://localhost:4100/api/entregas/${id}`);
       await fetchData();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar entrega');
@@ -130,7 +130,7 @@ const Entregas = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:3001/api/entregas/${id}/status`, {
+      await axios.patch(`http://localhost:4100/api/entregas/${id}/status`, {
         status: newStatus
       });
       await fetchData();
