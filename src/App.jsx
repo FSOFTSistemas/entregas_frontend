@@ -9,6 +9,8 @@ import Produtos from './pages/Produtos';
 import Usuarios from './pages/Usuarios';
 import Entregas from './pages/Entregas';
 import Empresas from './pages/Empresas';
+import NovaEntrega from './pages/NovaEntrega';
+import Relatorios from './pages/Relatorios';
 import './App.css';
 
 function App() {
@@ -52,10 +54,26 @@ function App() {
             </ProtectedRoute>
           } />
           
+          <Route path="/nova-entrega" element={
+            <ProtectedRoute>
+              <Layout>
+                <NovaEntrega />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          
           <Route path="/empresas" element={
             <ProtectedRoute requiredRole="master">
               <Layout>
                 <Empresas />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/relatorios" element={
+            <ProtectedRoute requiredRole="admin">
+              <Layout>
+                <Relatorios />
               </Layout>
             </ProtectedRoute>
           } />
@@ -69,4 +87,3 @@ function App() {
 }
 
 export default App;
-

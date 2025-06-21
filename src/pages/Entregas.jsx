@@ -6,7 +6,6 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import ReactSelect from 'react-select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -16,7 +15,6 @@ import {
   Trash2,
   Truck,
   Search,
-  Loader2,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -25,30 +23,21 @@ import {
   User
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { data } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 const Entregas = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [entregas, setEntregas] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingEntrega, setEditingEntrega] = useState(null);
-  const [formData, setFormData] = useState({
-    produto_id: '',
-    quantidade: '1',
-    descricao: '',
-    cliente: '',
-    data: new Date().toISOString().slice(0, 10),
-    status: 'pendente',
-    entregador_id: '',
-    empresa_id: user?.empresa_id || ''
-  });
+  // Removido estado do modal e edição
   const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Removido estado de envio relacionado ao modal
 
   useEffect(() => {
     fetchData();
@@ -73,49 +62,7 @@ const Entregas = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-
-    try {
-      const data = {
-        ...formData,
-        quantidade: parseInt(formData.quantidade),
-        empresa_id: user?.empresa_id,
-        data: formData.data ? new Date(formData.data).toISOString() : null
-      };
-      console.log(data);
-
-      if (editingEntrega) {
-        await axios.put(`http://localhost:4100/api/entregas/${editingEntrega.id}`, data);
-      } else {
-        await axios.post('http://localhost:4100/api/entregas', data);
-      }
-
-      await fetchData();
-      handleCloseDialog();
-    } catch (error) {
-      setError(error.response?.data?.message || 'Erro ao salvar entrega');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleEdit = (entrega) => {
-    setEditingEntrega(entrega);
-    setFormData({
-      produto_id: entrega.produto_id.toString(),
-      quantidade: entrega.quantidade.toString(),
-      descricao: entrega.descricao,
-      cliente: entrega.cliente || '',
-      data: entrega.data.split('T')[0], // Formato YYYY-MM-DD
-      status: entrega.status,
-      entregador_id: entrega.entregador_id?.toString() || '',
-      empresa_id: entrega.empresa_id.toString()
-    });
-    setIsDialogOpen(true);
-  };
+  // Removido handleSubmit e handleEdit relacionados ao modal
 
   const handleDelete = async (id) => {
     if (!confirm('Tem certeza que deseja deletar esta entrega?')) return;
@@ -139,26 +86,11 @@ const Entregas = () => {
     }
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-    setEditingEntrega(null);
-    setFormData({
-      produto_id: '',
-      quantidade: '1',
-      descricao: '',
-      cliente: '',
-      data: new Date().toISOString().slice(0, 19).replace('T', ' ').replace(/-/g, '-'),
-      status: 'pendente',
-      entregador_id: '',
-      empresa_id: user?.empresa_id || ''
-    });
-    setError('');
-  };
+  // Removido handleCloseDialog
 
   const getStatusBadge = (status) => {
     const statusConfig = {
       pendente: { variant: 'secondary', icon: Clock, label: 'Pendente' },
-      em_transito: { variant: 'default', icon: Truck, label: 'Em Trânsito' },
       entregue: { variant: 'success', icon: CheckCircle, label: 'Entregue' },
       cancelada: { variant: 'destructive', icon: AlertCircle, label: 'Cancelada' }
     };
@@ -198,7 +130,6 @@ const Entregas = () => {
 
   const entregasPorStatus = {
     pendente: entregas.filter(e => e.status === 'pendente'),
-    em_transito: entregas.filter(e => e.status === 'em_transito'),
     entregue: entregas.filter(e => e.status === 'entregue'),
     cancelada: entregas.filter(e => e.status === 'cancelada')
   };
@@ -213,240 +144,113 @@ const Entregas = () => {
 
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Entregas</h1>
-          <p className="text-muted-foreground">
-            Gerencie e acompanhe todas as entregas
-          </p>
+    <div className="flex-1 overflow-x-hidden">
+      <style>{`
+        * {
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+      `}</style>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Entregas</h1>
+            <p className="text-muted-foreground">
+              Gerencie e acompanhe todas as entregas
+            </p>
+          </div>
+
+          <Button onClick={() => navigate('/nova-entrega')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nova Entrega
+          </Button>
         </div>
 
-        <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nova Entrega
-        </Button>
+        {/* Filters */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar entregas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
+          </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>
-                {editingEntrega ? 'Editar Entrega' : 'Nova Entrega'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingEntrega
-                  ? 'Atualize as informações da entrega'
-                  : 'Registre uma nova entrega no sistema'
-                }
-              </DialogDescription>
-            </DialogHeader>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filtrar por status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os status</SelectItem>
+              <SelectItem value="pendente">Pendente</SelectItem>
+              <SelectItem value="entregue">Entregue</SelectItem>
+              <SelectItem value="cancelada">Cancelada</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+        {/* Status Tabs */}
+        <Tabs defaultValue="all" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="all">
+              Todas ({entregas.length})
+            </TabsTrigger>
+            <TabsTrigger value="pendente">
+              Pendentes ({entregasPorStatus.pendente.length})
+            </TabsTrigger>
+            <TabsTrigger value="entregue">
+              Entregues ({entregasPorStatus.entregue.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all">
+            <EntregasList
+              entregas={filteredEntregas}
+              onEdit={() => {}}
+              onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
+              getStatusBadge={getStatusBadge}
+              formatDate={formatDate}
+              formatCurrency={formatCurrency}
+            />
+          </TabsContent>
+
+          <TabsContent value="pendente">
+            <EntregasList
+              entregas={entregasPorStatus.pendente.filter(e =>
+                (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
               )}
+              onEdit={() => {}}
+              onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
+              getStatusBadge={getStatusBadge}
+              formatDate={formatDate}
+              formatCurrency={formatCurrency}
+            />
+          </TabsContent>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="produto_id" className="text-lg font-semibold">
-                    Produto
-                  </Label>
-                  <ReactSelect
-                    inputId="produto_id"
-                    options={produtos.map(produto => ({
-                      value: produto.id.toString(),
-                      label: `${produto.descricao} (Estoque: ${produto.estoque})`
-                    }))}
-                    value={
-                      produtos
-                        .map(produto => ({
-                          value: produto.id.toString(),
-                          label: `${produto.descricao} (Estoque: ${produto.estoque})`
-                        }))
-                        .find(option => option.value === formData.produto_id) || null
-                    }
-                    onChange={(selectedOption) =>
-                      setFormData({ ...formData, produto_id: selectedOption ? selectedOption.value : '' })
-                    }
-                    isDisabled={isSubmitting}
-                    placeholder="Selecione o produto"
-                    isClearable
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="quantidade">Quantidade</Label>
-                  <Input
-                    id="quantidade"
-                    type="number"
-                    min="1"
-                    value={formData.quantidade}
-                    onChange={(e) => setFormData({ ...formData, quantidade: e.target.value })}
-                    placeholder="0"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">Descrição</Label>
-                  <Input
-                    id="descricao"
-                    value={formData.descricao}
-                    onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                    placeholder="Descrição da entrega"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cliente">Cliente</Label>
-                  <Input
-                    id="cliente"
-                    value={formData.cliente}
-                    onChange={(e) => setFormData({ ...formData, cliente: e.target.value })}
-                    placeholder="Nome do cliente (opcional)"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                
-
-              
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCloseDialog}
-                  disabled={isSubmitting}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : (
-                    editingEntrega ? 'Atualizar' : 'Criar'
-                  )}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+          <TabsContent value="entregue">
+            <EntregasList
+              entregas={entregasPorStatus.entregue.filter(e =>
+                (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
+              )}
+              onEdit={() => {}}
+              onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
+              getStatusBadge={getStatusBadge}
+              formatDate={formatDate}
+              formatCurrency={formatCurrency}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {/* Filters */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar entregas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
-          />
-        </div>
-
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="pendente">Pendente</SelectItem>
-            <SelectItem value="em_transito">Em Trânsito</SelectItem>
-            <SelectItem value="entregue">Entregue</SelectItem>
-            <SelectItem value="cancelada">Cancelada</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Status Tabs */}
-      <Tabs defaultValue="all" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="all">
-            Todas ({entregas.length})
-          </TabsTrigger>
-          <TabsTrigger value="pendente">
-            Pendentes ({entregasPorStatus.pendente.length})
-          </TabsTrigger>
-          <TabsTrigger value="em_transito">
-            Em Trânsito ({entregasPorStatus.em_transito.length})
-          </TabsTrigger>
-          <TabsTrigger value="entregue">
-            Entregues ({entregasPorStatus.entregue.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <EntregasList
-            entregas={filteredEntregas}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onStatusChange={handleStatusChange}
-            getStatusBadge={getStatusBadge}
-            formatDate={formatDate}
-            formatCurrency={formatCurrency}
-          />
-        </TabsContent>
-
-        <TabsContent value="pendente">
-          <EntregasList
-            entregas={entregasPorStatus.pendente.filter(e =>
-              (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-              (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-              (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
-            )}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onStatusChange={handleStatusChange}
-            getStatusBadge={getStatusBadge}
-            formatDate={formatDate}
-            formatCurrency={formatCurrency}
-          />
-        </TabsContent>
-
-        <TabsContent value="em_transito">
-          <EntregasList
-            entregas={entregasPorStatus.em_transito.filter(e =>
-              (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-              (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-              (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
-            )}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onStatusChange={handleStatusChange}
-            getStatusBadge={getStatusBadge}
-            formatDate={formatDate}
-            formatCurrency={formatCurrency}
-          />
-        </TabsContent>
-
-        <TabsContent value="entregue">
-          <EntregasList
-            entregas={entregasPorStatus.entregue.filter(e =>
-              (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-              (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-              (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
-            )}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onStatusChange={handleStatusChange}
-            getStatusBadge={getStatusBadge}
-            formatDate={formatDate}
-            formatCurrency={formatCurrency}
-          />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };
@@ -473,24 +277,17 @@ const EntregasList = ({
   return (
     <div className="space-y-4">
       {entregas.map((entrega) => (
-        <Card key={entrega.id}>
+        <Card key={entrega.id} className="w-full">
           <CardHeader>
             <div className="flex justify-between items-start">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg">{entrega.produto_descricao}</CardTitle>
                   {getStatusBadge(entrega.status)}
                 </div>
-                <CardDescription>{entrega.descricao}</CardDescription>
+                <CardTitle>{entrega.descricao}</CardTitle>
               </div>
               <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(entrega)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
+                {/* Removido botão de edição via modal */}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -503,7 +300,7 @@ const EntregasList = ({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <User className="h-4 w-4 text-muted-foreground" />
@@ -522,16 +319,20 @@ const EntregasList = ({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Entregador:</span>
-                  <span className="ml-2">{entrega.entregador_nome || 'Não atribuído'}</span>
+              <div className="space-y-2 mt-2">
+                <div className="w-full">
+                  <div className="text-sm w-full">
+                    <span className="text-muted-foreground w-full">Entregador:</span>
+                    <span className="ml-2 w-full">{entrega.entregador?.nome || 'Não atribuído'}</span>
+                  </div>
                 </div>
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Valor total:</span>
-                  <span className="ml-2 font-medium">
-                    {formatCurrency(entrega.preco_venda * entrega.quantidade)}
-                  </span>
+                <div className="w-full">
+                  <div className="text-sm w-full">
+                    <span className="text-muted-foreground w-full">Valor total:</span>
+                    <span className="ml-2 font-medium w-full">
+                      {formatCurrency(entrega.produto.preco_venda * entrega.quantidade)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -546,7 +347,6 @@ const EntregasList = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pendente">Pendente</SelectItem>
-                    <SelectItem value="em_transito">Em Trânsito</SelectItem>
                     <SelectItem value="entregue">Entregue</SelectItem>
                     <SelectItem value="cancelada">Cancelada</SelectItem>
                   </SelectContent>

@@ -25,10 +25,11 @@ const Layout = ({ children }) => {
   };
 
   const menuItems = [
-    { path: '/', icon: Home, label: 'Dashboard', roles: ['master', 'admin', 'entregador'] },
+    { path: '/', icon: Home, label: 'Início', roles: ['master', 'admin', 'entregador'] },
     { path: '/produtos', icon: Package, label: 'Produtos', roles: ['master', 'admin'] },
-    { path: '/usuarios', icon: Users, label: 'Usuários', roles: ['master', 'admin'] },
     { path: '/entregas', icon: Truck, label: 'Entregas', roles: ['master', 'admin'] },
+    { path: '/relatorios', icon: Package, label: 'Relatórios', roles: ['master', 'admin'] },
+    { path: '/usuarios', icon: Users, label: 'Usuários', roles: ['master', 'admin'] },
     { path: '/empresas', icon: Building2, label: 'Empresas', roles: ['master'] },
   ];
 
@@ -53,7 +54,7 @@ const Layout = ({ children }) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="text-sm">
+          <div className="text-xs sm:text-sm">
             <span className="text-white/70">Bem-vindo, </span>
             <span className="font-medium">{user?.nome}</span>
             <div className="text-xs text-white/70">
@@ -73,7 +74,6 @@ const Layout = ({ children }) => {
           fixed md:static inset-y-0 left-0 z-50 w-64 border-r transform transition-transform duration-200 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           bg-orange-400 text-white
-          h-screen
         `}>
           <div className="p-4 flex flex-col justify-center items-center border-b border-white/20 space-y-2">
             <Truck className="h-12 w-12 text-white" />
@@ -116,6 +116,26 @@ const Layout = ({ children }) => {
         <main className="flex-1 p-6">
           {children}
         </main>
+
+        {/* Bottom Navigation Bar - mobile only */}
+        <nav className="fixed bottom-0 left-0 right-0 bg-orange-500 text-white flex justify-around items-center h-14 md:hidden z-50">
+          {filteredMenuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex flex-col items-center justify-center text-xs ${isActive ? 'text-black font-bold' : ''}`}
+              >
+                <Icon className="h-5 w-5 mb-0.5" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );

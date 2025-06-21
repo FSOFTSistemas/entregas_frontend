@@ -15,6 +15,7 @@ import {
   Building2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const formatCurrency = (value) => {
   if (isNaN(value)) return '-';
@@ -23,6 +24,7 @@ const formatCurrency = (value) => {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [entregas, setEntregas] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -220,6 +222,13 @@ const Dashboard = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
+          {user?.tipo_usuario === 'admin' && (
+            <div className="mt-4 flex justify-end">
+              <Button onClick={() => navigate('/nova-entrega')}>
+                Nova Entrega
+              </Button>
+            </div>
+          )}
           <p className="text-muted-foreground">
             Visão geral das entregas e estatísticas
           </p>
@@ -228,52 +237,38 @@ const Dashboard = () => {
 
         {user?.tipo_usuario !== 'entregador' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
+            <Card className="p-2 sm:p-4" style={{ minHeight: 'auto' }}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Entregas</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-medium leading-none">Total de Entregas</CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.total}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-xl sm:text-2xl font-bold leading-none">{stats.total}</div>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight" style={{ padding: 0 }}>
                   Todas as entregas registradas
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="p-2 sm:p-4" style={{ minHeight: 'auto' }}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-medium leading-none">Pendentes</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.pendente}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-xl sm:text-2xl font-bold leading-none">{stats.pendente}</div>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight" style={{ padding: 0 }}>
                   Aguardando processamento
                 </p>
               </CardContent>
             </Card>
-
-            <Card>
+            <Card className="p-2 sm:p-4" style={{ minHeight: 'auto' }}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Em Trânsito</CardTitle>
-                <Truck className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.em_transito}</div>
-                <p className="text-xs text-muted-foreground">
-                  A caminho do destino
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Entregues</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-medium leading-none">Entregues</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.entregue}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-xl sm:text-2xl font-bold leading-none">{stats.entregue}</div>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight" style={{ padding: 0 }}>
                   Concluídas com sucesso
                 </p>
               </CardContent>
