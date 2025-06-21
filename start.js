@@ -1,15 +1,13 @@
-import fs from 'fs';
-import https from 'https';
+import dotenv from 'dotenv';
+dotenv.config();
 import { exec } from 'child_process';
 
-const modoHTTPS = true;
+const modoHTTPS = process.env.HTTPS === 'true';
 
 
 console.log(`🟢 Iniciando o projeto na porta 4200... Modo: ${modoHTTPS ? 'HTTPS' : 'HTTP'}`);
 
-const comando = modoHTTPS
-  ? 'npm run dev -- --https --ssl-cert /etc/letsencrypt/live/gestao-api.dev.br/fullchain.pem --ssl-key /etc/letsencrypt/live/gestao-api.dev.br/privkey.pem --port 4200'
-  : 'npm run dev -- --port 4200';
+const comando = 'npm run dev';
 
 const processo = exec(comando);
 

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -10,5 +11,12 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  server: {
+    https: {
+      key: fs.readFileSync('/etc/letsencrypt/live/gestao-api.dev.br/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/gestao-api.dev.br/fullchain.pem'),
+    },
+    port: 4200,
   },
 })
