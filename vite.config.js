@@ -13,6 +13,7 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0',
     https: {
       key: fs.readFileSync('/home/ubuntu/certs/privkey.pem'),
       cert: fs.readFileSync('/home/ubuntu/certs/fullchain.pem'),
