@@ -14,8 +14,8 @@ export default defineConfig({
   },
   server: {
     https: {
-      key: fs.readFileSync('/etc/letsencrypt/live/gestao-api.dev.br/privkey.pem'),
-      cert: fs.readFileSync('/etc/letsencrypt/live/gestao-api.dev.br/fullchain.pem'),
+      key: fs.readFileSync('/home/ubuntu/certs/privkey.pem'),
+      cert: fs.readFileSync('/home/ubuntu/certs/fullchain.pem'),
     },
     port: 4200,
   },
