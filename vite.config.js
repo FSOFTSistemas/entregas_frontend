@@ -3,6 +3,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import dotenv from 'dotenv';
+dotenv.config();
+
+const useHttps = process.env.USE_HTTPS === 'true';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,10 +18,12 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    https: {
-      key: fs.readFileSync('/home/ubuntu/certs/privkey.pem'),
-      cert: fs.readFileSync('/home/ubuntu/certs/fullchain.pem'),
-    },
     port: 4200,
+    ...(useHttps && {
+      https: {
+        key: fs.readFileSync('/home/ubuntu/certs/privkey.pem'),
+        cert: fs.readFileSync('/home/ubuntu/certs/fullchain.pem'),
+      },
+    }),
   },
 })

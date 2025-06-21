@@ -246,7 +246,7 @@ const UsuariosPage = () => {
                   onValueChange={(value) => setFormData({ ...formData, tipo_usuario: value })}
                   disabled={isSubmitting}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
@@ -267,7 +267,7 @@ const UsuariosPage = () => {
                     onValueChange={(value) => setFormData({ ...formData, empresa_id: value })}
                     disabled={isSubmitting}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione a empresa" />
                     </SelectTrigger>
                     <SelectContent>
@@ -371,7 +371,7 @@ const UsuariosPage = () => {
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Criado em:</span>
                     <span className="text-sm">
-                      {new Date(usuario.created_at).toLocaleDateString('pt-BR')}
+                      {new Date(usuario.createdAt).toLocaleDateString('pt-BR')}
                     </span>
                   </div>
                 </div>
@@ -385,4 +385,3 @@ const UsuariosPage = () => {
 };
 
 export default UsuariosPage;
-

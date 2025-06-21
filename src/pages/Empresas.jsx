@@ -35,6 +35,23 @@ const Empresas = () => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const buscarDadosCNPJ = async (cnpjLimpo) => {
+    try {
+      const response = await axios.get(`https://open.cnpja.com/office/${cnpjLimpo}`);
+      const data = response.data;
+
+      if (data) {
+        setFormData(prev => ({
+          ...prev,
+          razao_social: data.alias || '',
+          endereco: `${data.address.street}, ${data.address.number} - ${data.address.district}, ${data.address.city} - ${data.address.state}, CEP: ${data.address.zip}`
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao consultar o CNPJ:', error);
+    }
+  };
+
   useEffect(() => {
     fetchEmpresas();
   }, []);
@@ -190,7 +207,15 @@ const Empresas = () => {
                 <Input
                   id="cnpj_cpf"
                   value={formData.cnpj_cpf}
-                  onChange={(e) => setFormData({...formData, cnpj_cpf: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData({ ...formData, cnpj_cpf: value });
+
+                    const numbersOnly = value.replace(/\D/g, '');
+                    if (numbersOnly.length === 14) {
+                      buscarDadosCNPJ(numbersOnly);
+                    }
+                  }}
                   placeholder="00.000.000/0000-00 ou 000.000.000-00"
                   required
                   disabled={isSubmitting}
@@ -343,4 +368,3 @@ const Empresas = () => {
 };
 
 export default Empresas;
-

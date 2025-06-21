@@ -4,17 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { 
-  Package, 
-  Truck, 
-  CheckCircle, 
-  Clock, 
+import {
+  Package,
+  Truck,
+  CheckCircle,
+  Clock,
   AlertCircle,
   TrendingUp,
   Users,
   Building2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+
+const formatCurrency = (value) => {
+  if (isNaN(value)) return '-';
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -41,7 +46,7 @@ const Dashboard = () => {
       const response = await axios.get('http://localhost:4100/api/entregas');
       const entregasData = response.data;
       setEntregas(entregasData);
-      
+
       // Calcular estatísticas
       const stats = entregasData.reduce((acc, entrega) => {
         acc.total++;
@@ -49,12 +54,12 @@ const Dashboard = () => {
         return acc;
       }, {
         total: 0,
-        pendentes: 0,
+        pendente: 0,
         em_transito: 0,
-        entregues: 0,
-        canceladas: 0
+        entregue: 0,
+        cancelada: 0
       });
-      
+
       setStats(stats);
     } catch (error) {
       console.error('Erro ao carregar entregas:', error);
@@ -65,9 +70,17 @@ const Dashboard = () => {
 
   const confirmarSelecionarEntrega = async (entregaId) => {
     try {
+      const entrega = entregas.find(e => e.id === entregaId);
+      if (!entrega) return;
+
       await axios.put(`http://localhost:4100/api/entregas/${entregaId}`, {
-        entregador_id: user.id,
-        status: 'entregue'
+        produto_id: entrega.produto_id,
+        quantidade: entrega.quantidade,
+        descricao: entrega.descricao,
+        cliente: entrega.cliente,
+        data: entrega.data,
+        status: 'entregue',
+        entregador_id: user.id
       });
       fetchEntregas();
       setIsConfirmModalOpen(false);
@@ -117,9 +130,6 @@ const Dashboard = () => {
     );
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
 
   const formatDateTime = (dateString) => {
     if (!dateString) return '-';
@@ -147,7 +157,12 @@ const Dashboard = () => {
   }
 
   const entregasPendentes = entregas.filter(e => e.status === 'pendente');
-  const entregasEntregues = entregas.filter(e => e.status === 'entregue');
+  const entregasEntregues = entregas.filter(e => {
+    if (user?.tipo_usuario === 'entregador') {
+      return e.status === 'entregue' && e.entregador_id === user.id;
+    }
+    return e.status === 'entregue';
+  });
 
   return (
     <>
@@ -212,59 +227,58 @@ const Dashboard = () => {
 
 
         {user?.tipo_usuario !== 'entregador' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Entregas</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <p className="text-xs text-muted-foreground">
-                Todas as entregas registradas
-              </p>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total de Entregas</CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.total}</div>
+                <p className="text-xs text-muted-foreground">
+                  Todas as entregas registradas
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.pendente}</div>
+                <p className="text-xs text-muted-foreground">
+                  Aguardando processamento
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.pendentes}</div>
-              <p className="text-xs text-muted-foreground">
-                Aguardando processamento
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Em Trânsito</CardTitle>
+                <Truck className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.em_transito}</div>
+                <p className="text-xs text-muted-foreground">
+                  A caminho do destino
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Em Trânsito</CardTitle>
-              <Truck className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.em_transito}</div>
-              <p className="text-xs text-muted-foreground">
-                A caminho do destino
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Entregues</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.entregues}</div>
-              <p className="text-xs text-muted-foreground">
-                Concluídas com sucesso
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Entregues</CardTitle>
+                <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.entregue}</div>
+                <p className="text-xs text-muted-foreground">
+                  Concluídas com sucesso
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* Entregas Tabs */}
@@ -295,23 +309,33 @@ const Dashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {entregasPendentes.map((entrega) => (
-                      <div key={entrega.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={entrega.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border rounded-lg">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-medium">{entrega.produto_descricao}</h4>
                             {getStatusBadge(entrega.status)}
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            Descricao: 
+                            Descricao:
                           </p>
-                            <CardTitle>{entrega.descricao || 'Não informado'}</CardTitle>
+                          <CardTitle>{entrega.descricao || 'Não informado'}</CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            Quantidade: {entrega.quantidade} • Data: {formatDateTime(entrega.createdAt)}
+                            Produto: {entrega.produto.descricao || 'Não informado'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Quantidade: {entrega.quantidade}
+                          </p>
+                          {user?.tipo_usuario !== 'entregador' && (
+                            <p className="text-sm text-muted-foreground">
+                              Total: {formatCurrency(entrega.quantidade * entrega.produto.preco_venda)}
+                            </p>
+                          )}
+                          <p className="text-sm text-muted-foreground w-full">
+                            Data: {formatDateTime(entrega.createdAt)}
                           </p>
                         </div>
-                        <div className="text-right">
+                        <div className="w-full md:w-auto mt-4 md:mt-0">
                           <button
-                            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded text-lg w-full"
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded text-lg w-full md:w-auto"
                             onClick={() => handleSelecionarEntrega(entrega)}
                           >
                             Selecionar
@@ -342,21 +366,37 @@ const Dashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {entregasEntregues.slice(0, 10).map((entrega) => (
-                      <div key={entrega.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={entrega.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border rounded-lg">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-medium">{entrega.produto_descricao}</h4>
                             {getStatusBadge(entrega.status)}
                           </div>
-                          <CardTitle> Descrição: {entrega.descricao || 'Não informado'}</CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            Quantidade: {entrega.quantidade} • Data: {formatDateTime(entrega.updatedAt)}
+                            Descricao:
+                          </p>
+                          <CardTitle>{entrega.descricao || 'Não informado'}</CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            Produto: {entrega.produto.descricao || 'Não informado'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Quantidade: {entrega.quantidade}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Entregador: {entrega.entregador?.nome || 'Não informado'}
+                          </p>
+                          {user?.tipo_usuario !== 'entregador' && (
+                            <p className="text-sm text-muted-foreground">
+                              Total: {formatCurrency(entrega.quantidade * entrega.produto.preco_venda)}
+                            </p>
+                          )}
+                          <p className="text-sm text-muted-foreground w-full">
+                            Data: {formatDateTime(entrega.updatedAt)}
                           </p>
                         </div>
                         {user?.tipo_usuario === 'admin' && (
-                          <div className="text-right">
+                          <div className="w-full md:w-auto mt-4 md:mt-0">
                             <button
-                              className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded text-lg w-full"
+                              className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded text-lg w-full md:w-auto"
                               onClick={() => handleExcluirEntrega(entrega)}
                             >
                               Excluir

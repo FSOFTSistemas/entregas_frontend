@@ -184,36 +184,49 @@ const Produtos = () => {
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="preco_custo">Preço de Custo</Label>
-                  <Input
-                    id="preco_custo"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.preco_custo}
-                    onChange={(e) => setFormData({...formData, preco_custo: e.target.value})}
-                    placeholder="0,00"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="preco_venda">Preço de Venda</Label>
-                  <Input
-                    id="preco_venda"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.preco_venda}
-                    onChange={(e) => setFormData({...formData, preco_venda: e.target.value})}
-                    placeholder="0,00"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="preco_custo">Preço de Custo</Label>
+                <Input
+                  id="preco_custo"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.preco_custo}
+                  onChange={(e) => setFormData({...formData, preco_custo: e.target.value})}
+                  placeholder="0,00"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="preco_venda">Preço de Venda</Label>
+                <Input
+                  id="preco_venda"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.preco_venda}
+                  onChange={(e) => setFormData({...formData, preco_venda: e.target.value})}
+                  placeholder="0,00"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="markup">Markup (%)</Label>
+                <Input
+                  id="markup"
+                  type="number"
+                  step="0.01"
+                  value={
+                    formData.preco_custo && formData.preco_venda
+                      ? (((parseFloat(formData.preco_venda) - parseFloat(formData.preco_custo)) / parseFloat(formData.preco_custo)) * 100).toFixed(2)
+                      : ''
+                  }
+                  readOnly
+                />
               </div>
               
               <div className="space-y-2">
@@ -316,6 +329,16 @@ const Produtos = () => {
                     </Badge>
                   </div>
                 </div>
+                <div className="space-y-1 pt-2 border-t">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Total (Custo):</span>
+                    <span className="text-sm">{formatCurrency(produto.preco_custo * produto.estoque)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Total (Venda):</span>
+                    <span className="text-sm">{formatCurrency(produto.preco_venda * produto.estoque)}</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ))
@@ -326,4 +349,3 @@ const Produtos = () => {
 };
 
 export default Produtos;
-
