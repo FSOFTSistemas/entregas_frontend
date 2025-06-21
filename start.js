@@ -1,14 +1,24 @@
+import fs from 'fs';
+import https from 'https';
 import { exec } from 'child_process';
 
-console.log('🟢 Iniciando o projeto na porta 4200... Aguarde...');
+const modoHTTPS = process.env.HTTPS === 'true';
 
-const processo = exec('npm run dev -- --port 4200');
+console.log(`🟢 Iniciando o projeto na porta 4200... Modo: ${modoHTTPS ? 'HTTPS' : 'HTTP'}`);
+
+const comando = modoHTTPS
+  ? 'npm run dev -- --https --ssl-cert /etc/letsencrypt/live/gestao-api.dev.br/fullchain.pem --ssl-key /etc/letsencrypt/live/gestao-api.dev.br/privkey.pem --port 4200'
+  : 'npm run dev -- --port 4200';
+
+const processo = exec(comando);
+
+// const processo = exec('npm run dev -- --port 4200');
 
 processo.stdout.on('data', (data) => {
   console.log(data);
 
-  if (data.includes('http://localhost:')) {
-    const match = data.match(/http:\/\/localhost:(\d+)/);
+  if (data.includes('localhost:')) {
+    const match = data.match(/https?:\/\/localhost:(\d+)/);
     if (match) {
       console.log(`✅ Projeto rodando com sucesso na porta ${match[1]}`);
     }
