@@ -2,7 +2,8 @@ import fs from 'fs';
 import https from 'https';
 import { exec } from 'child_process';
 
-const modoHTTPS = process.env.HTTPS === 'true';
+const modoHTTPS = true;
+
 
 console.log(`🟢 Iniciando o projeto na porta 4200... Modo: ${modoHTTPS ? 'HTTPS' : 'HTTP'}`);
 
@@ -12,7 +13,6 @@ const comando = modoHTTPS
 
 const processo = exec(comando);
 
-// const processo = exec('npm run dev -- --port 4200');
 
 processo.stdout.on('data', (data) => {
   console.log(data);
