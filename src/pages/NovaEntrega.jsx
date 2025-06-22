@@ -31,7 +31,7 @@ export default function NovaEntrega() {
   useEffect(() => {
     async function fetchProdutos() {
       try {
-        const response = await axios.get('http://localhost:4100/api/produtos');
+        const response = await axios.get('https://www.gestao-api.dev.br:4100/api/produtos');
         setProdutos(response.data);
       } catch (err) {
         console.error('Erro ao buscar produtos:', err);
@@ -75,7 +75,7 @@ export default function NovaEntrega() {
         data.quantidade = parseInt(formData[0].quantidade);
       }
 
-      await axios.post('http://localhost:4100/api/entregas', data);
+      await axios.post('https://www.gestao-api.dev.br:4100/api/entregas', data);
 
       // Mostrar modal de sucesso
       setShowSuccessModal(true);

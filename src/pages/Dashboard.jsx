@@ -45,7 +45,7 @@ const Dashboard = () => {
 
   const fetchEntregas = async () => {
     try {
-      const response = await axios.get('http://localhost:4100/api/entregas');
+      const response = await axios.get('https://www.gestao-api.dev.br:4100/api/entregas');
       const entregasData = response.data;
       setEntregas(entregasData);
 
@@ -75,7 +75,7 @@ const Dashboard = () => {
       const entrega = entregas.find(e => e.id === entregaId);
       if (!entrega) return;
 
-      await axios.put(`http://localhost:4100/api/entregas/${entregaId}`, {
+      await axios.put(`https://www.gestao-api.dev.br:4100/api/entregas/${entregaId}`, {
         produto_id: entrega.produto_id,
         quantidade: entrega.quantidade,
         descricao: entrega.descricao,
@@ -104,7 +104,7 @@ const Dashboard = () => {
   const confirmarExclusaoEntrega = async () => {
     if (!entregaParaExcluir) return;
     try {
-      await axios.delete(`http://localhost:4100/api/entregas/${entregaParaExcluir.id}`);
+      await axios.delete(`https://www.gestao-api.dev.br:4100/api/entregas/${entregaParaExcluir.id}`);
       fetchEntregas();
       setIsDeleteModalOpen(false);
       setEntregaParaExcluir(null);

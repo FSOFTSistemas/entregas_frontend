@@ -282,7 +282,7 @@ npm run dev
 npm start
 ```
 
-O backend estará rodando em `http://localhost:4100`
+O backend estará rodando em `https://www.gestao-api.dev.br:4100`
 
 ### 3. Configuração do Frontend
 
@@ -317,7 +317,7 @@ O frontend estará rodando em `http://localhost:5173`
 
 #### Testar API do backend
 ```bash
-curl http://localhost:4100/api/health
+curl https://www.gestao-api.dev.br:4100/api/health
 ```
 
 Resposta esperada:
@@ -498,7 +498,7 @@ GET /api/health
 
 ### Login
 ```bash
-curl -X POST http://localhost:4100/api/auth/login \
+curl -X POST https://www.gestao-api.dev.br:4100/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@exemplo.com",
@@ -508,7 +508,7 @@ curl -X POST http://localhost:4100/api/auth/login \
 
 ### Criar Produto
 ```bash
-curl -X POST http://localhost:4100/api/produtos \
+curl -X POST https://www.gestao-api.dev.br:4100/api/produtos \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <seu_token_jwt>" \
   -d '{
@@ -521,7 +521,7 @@ curl -X POST http://localhost:4100/api/produtos \
 
 ### Listar Entregas
 ```bash
-curl -X GET http://localhost:4100/api/entregas \
+curl -X GET https://www.gestao-api.dev.br:4100/api/entregas \
   -H "Authorization: Bearer <seu_token_jwt>"
 ```
 

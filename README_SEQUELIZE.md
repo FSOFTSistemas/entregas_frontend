@@ -15,7 +15,7 @@ Este projeto foi adaptado para utilizar o Sequelize como ORM (Object-Relational 
 - Interface interativa para testar endpoints
 - Documentação completa de todos os endpoints da API
 - Esquemas de autenticação JWT integrados
-- Disponível em: `http://localhost:4100/api-docs`
+- Disponível em: `https://www.gestao-api.dev.br:4100/api-docs`
 
 ### 3. Estrutura de Diretórios Organizada
 ```
@@ -230,7 +230,7 @@ Authorization: Bearer <seu_jwt_token>
 ## Documentação Swagger
 
 A documentação interativa da API está disponível em:
-- **URL**: `http://localhost:4100/api-docs`
+- **URL**: `https://www.gestao-api.dev.br:4100/api-docs`
 - **Funcionalidades**:
   - Testar endpoints diretamente na interface
   - Visualizar esquemas de dados
@@ -240,7 +240,7 @@ A documentação interativa da API está disponível em:
 ## Health Check
 
 Para verificar se a API está funcionando:
-- **URL**: `http://localhost:4100/api/health`
+- **URL**: `https://www.gestao-api.dev.br:4100/api/health`
 - **Resposta**:
   ```json
   {
