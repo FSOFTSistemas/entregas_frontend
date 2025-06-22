@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
   const fetchEntregas = async () => {
     try {
-      const response = await axios.get('https://www.gestao-api.dev.br:4100/api/entregas');
+      const response = await api.get('/entregas');
       const entregasData = response.data;
       setEntregas(entregasData);
 
@@ -75,7 +75,7 @@ const Dashboard = () => {
       const entrega = entregas.find(e => e.id === entregaId);
       if (!entrega) return;
 
-      await axios.put(`https://www.gestao-api.dev.br:4100/api/entregas/${entregaId}`, {
+      await api.put(`entregas/${entregaId}`, {
         descricao: entrega.descricao,
         cliente: entrega.cliente,
         data: entrega.data,
@@ -102,7 +102,7 @@ const Dashboard = () => {
   const confirmarExclusaoEntrega = async () => {
     if (!entregaParaExcluir) return;
     try {
-      await axios.delete(`https://www.gestao-api.dev.br:4100/api/entregas/${entregaParaExcluir.id}`);
+      await api.delete(`/entregas/${entregaParaExcluir.id}`);
       fetchEntregas();
       setIsDeleteModalOpen(false);
       setEntregaParaExcluir(null);

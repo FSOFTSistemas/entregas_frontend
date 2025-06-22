@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -46,7 +46,7 @@ const UsuariosPage = () => {
 
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('https://www.gestao-api.dev.br:4100/api/empresas/');
+      const response = await api.get('/empresas/');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Erro ao carregar empresas:', error);
@@ -55,7 +55,7 @@ const UsuariosPage = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get('https://www.gestao-api.dev.br:4100/api/usuarios');
+      const response = await api.get('/usuarios');
       setUsuarios(response.data);
     } catch (error) {
       console.error('Erro ao carregar usuários:', error);
@@ -81,9 +81,9 @@ const UsuariosPage = () => {
       }
 
       if (editingUsuario) {
-        await axios.put(`https://www.gestao-api.dev.br:4100/api/usuarios/${editingUsuario.id}`, data);
+        await api.put(`/usuarios/${editingUsuario.id}`, data);
       } else {
-        await axios.post('https://www.gestao-api.dev.br:4100/api/usuarios', data);
+        await api.post('/usuarios', data);
       }
 
       await fetchUsuarios();
@@ -111,7 +111,7 @@ const UsuariosPage = () => {
     if (!confirm('Tem certeza que deseja deletar este usuário?')) return;
 
     try {
-      await axios.delete(`https://www.gestao-api.dev.br:4100/api/usuarios/${id}`);
+      await api.delete(`/usuarios/${id}`);
       await fetchUsuarios();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar usuário');

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { exec } from 'child_process';
 
-const modoHTTPS = process.env.HTTPS === 'true';
+const modoHTTPS =  process.env.HTTPS === 'true';
 
 
 console.log(`🟢 Iniciando o projeto na porta 4200... Modo: ${modoHTTPS ? 'HTTPS' : 'HTTP'}`);
@@ -13,7 +13,6 @@ const processo = exec(comando);
 
 
 processo.stdout.on('data', (data) => {
-  console.log(data);
 
   if (data.includes('localhost:')) {
     const match = data.match(/https?:\/\/localhost:(\d+)/);

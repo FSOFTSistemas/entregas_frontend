@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import ReactSelect from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -32,7 +32,7 @@ export default function NovaEntrega() {
   useEffect(() => {
     async function fetchProdutos() {
       try {
-        const response = await axios.get('https://www.gestao-api.dev.br:4100/api/produtos');
+        const response = await api.get('/produtos');
         setProdutos(response.data);
       } catch (err) {
         console.error('Erro ao buscar produtos:', err);
@@ -77,7 +77,7 @@ export default function NovaEntrega() {
         status: 'pendente',
       };
 
-      await axios.post('https://www.gestao-api.dev.br:4100/api/entregas', data);
+      await api.post('/entregas', data);
 
       // Mostrar modal de sucesso
       setShowSuccessModal(true);

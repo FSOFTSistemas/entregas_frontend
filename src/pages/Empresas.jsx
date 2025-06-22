@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../services/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -58,7 +59,7 @@ const Empresas = () => {
 
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('https://www.gestao-api.dev.br:4100/api/empresas');
+      const response = await api.get('/empresas');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Erro ao carregar empresas:', error);
@@ -75,9 +76,9 @@ const Empresas = () => {
 
     try {
       if (editingEmpresa) {
-        await axios.put(`https://www.gestao-api.dev.br:4100/api/empresas/${editingEmpresa.id}`, formData);
+        await api.put(`/empresas/${editingEmpresa.id}`, formData);
       } else {
-        await axios.post('https://www.gestao-api.dev.br:4100/api/empresas', formData);
+        await api.post('/empresas', formData);
       }
 
       await fetchEmpresas();
@@ -104,7 +105,7 @@ const Empresas = () => {
     if (!confirm('Tem certeza que deseja deletar esta empresa?')) return;
 
     try {
-      await axios.delete(`https://www.gestao-api.dev.br:4100/api/empresas/${id}`);
+      await api.delete(`/empresas/${id}`);
       await fetchEmpresas();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar empresa');

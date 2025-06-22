@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import ReactSelect from 'react-select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Alert, AlertDescription } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import {
@@ -46,9 +44,9 @@ const Entregas = () => {
   const fetchData = async () => {
     try {
       const [entregasRes, produtosRes, usuariosRes] = await Promise.all([
-        axios.get('https://www.gestao-api.dev.br:4100/api/entregas'),
-        axios.get('https://www.gestao-api.dev.br:4100/api/produtos'),
-        axios.get('https://www.gestao-api.dev.br:4100/api/usuarios')
+        api.get('/entregas'),
+        api.get('/produtos'),
+        api.get('/usuarios')
       ]);
 
       setEntregas(entregasRes.data);
@@ -68,7 +66,7 @@ const Entregas = () => {
     if (!confirm('Tem certeza que deseja deletar esta entrega?')) return;
 
     try {
-      await axios.delete(`https://www.gestao-api.dev.br:4100/api/entregas/${id}`);
+      await api.delete(`/entregas/${id}`);
       await fetchData();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar entrega');
@@ -77,7 +75,7 @@ const Entregas = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.patch(`https://www.gestao-api.dev.br:4100/api/entregas/${id}/status`, {
+      await api.patch(`/entregas/${id}/status`, {
         status: newStatus
       });
       await fetchData();
@@ -259,7 +257,6 @@ const Entregas = () => {
 // Componente para listar entregas
 const EntregasList = ({
   entregas,
-  onEdit,
   onDelete,
   onStatusChange,
   getStatusBadge,

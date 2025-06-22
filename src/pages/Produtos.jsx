@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -40,7 +40,9 @@ const Produtos = () => {
 
   const fetchProdutos = async () => {
     try {
-      const response = await axios.get('https://www.gestao-api.dev.br:4100/api/produtos');
+      const response = await api.get('/produtos');
+      console.log(response.data);
+      
       setProdutos(response.data);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
@@ -65,9 +67,9 @@ const Produtos = () => {
       };
 
       if (editingProduto) {
-        await axios.put(`https://www.gestao-api.dev.br:4100/api/produtos/${editingProduto.id}`, data);
+        await api.put(`/produtos/${editingProduto.id}`, data);
       } else {
-        await axios.post('https://www.gestao-api.dev.br:4100/api/produtos', data);
+        await api.post('/produtos', data);
       }
 
       await fetchProdutos();
@@ -95,7 +97,7 @@ const Produtos = () => {
     if (!confirm('Tem certeza que deseja deletar este produto?')) return;
 
     try {
-      await axios.delete(`https://www.gestao-api.dev.br:4100/api/produtos/${id}`);
+      await api.delete(`/produtos/${id}`);
       await fetchProdutos();
     } catch (error) {
       setError(error.response?.data?.message || 'Erro ao deletar produto');

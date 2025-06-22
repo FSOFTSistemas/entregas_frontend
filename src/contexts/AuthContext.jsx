@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     const verifyToken = async () => {
       if (token) {
         try {
-          const response = await axios.get('https://www.gestao-api.dev.br:4100/api/auth/verify');
+          const response = await api.get('/auth/verify');
           setUser(response.data.usuario);
         } catch (error) {
           console.error('Token inválido:', error);
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('https://www.gestao-api.dev.br:4100/api/auth/login', {
+      const response = await api.post('/auth/login', {
         email,
         password
       });
