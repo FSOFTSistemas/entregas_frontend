@@ -118,13 +118,14 @@ const Entregas = () => {
   };
 
   const filteredEntregas = entregas.filter(entrega => {
+    const produtosDescricao = entrega.produtos ? entrega.produtos.map(p => p.descricao.toLowerCase()).join(' ') : '';
     const matchesSearch =
-      (entrega.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      produtosDescricao.includes(searchTerm.toLowerCase()) ||
       (entrega.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (entrega.descricao || '').toLowerCase().includes(searchTerm.toLowerCase());
-  
+
     const matchesStatus = statusFilter === 'all' || entrega.status === statusFilter;
-  
+
     return matchesSearch && matchesStatus;
   });
 
@@ -221,7 +222,7 @@ const Entregas = () => {
           <TabsContent value="pendente">
             <EntregasList
               entregas={entregasPorStatus.pendente.filter(e =>
-                (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (e.produtos ? e.produtos.map(p => p.descricao.toLowerCase()).join(' ') : '').includes(searchTerm.toLowerCase()) ||
                 (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
               )}
@@ -237,7 +238,7 @@ const Entregas = () => {
           <TabsContent value="entregue">
             <EntregasList
               entregas={entregasPorStatus.entregue.filter(e =>
-                (e.produto_descricao || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (e.produtos ? e.produtos.map(p => p.descricao.toLowerCase()).join(' ') : '').includes(searchTerm.toLowerCase()) ||
                 (e.cliente || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (e.descricao || '').toLowerCase().includes(searchTerm.toLowerCase())
               )}
@@ -309,8 +310,10 @@ const EntregasList = ({
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Package className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Quantidade:</span>
-                  <span>{entrega.quantidade}</span>
+                  <span className="text-muted-foreground">Quantidade total:</span>
+                  <span>
+                    {entrega.produtos ? entrega.produtos.reduce((acc, p) => acc + p.EntregaProduto.quantidade, 0) : 0}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -330,7 +333,14 @@ const EntregasList = ({
                   <div className="text-sm w-full">
                     <span className="text-muted-foreground w-full">Valor total:</span>
                     <span className="ml-2 font-medium w-full">
-                      {formatCurrency(entrega.produto.preco_venda * entrega.quantidade)}
+                      {formatCurrency(
+                        entrega.produtos
+                          ? entrega.produtos.reduce(
+                              (acc, p) => acc + p.EntregaProduto.quantidade * p.EntregaProduto.preco_unitario,
+                              0
+                            )
+                          : 0
+                      )}
                     </span>
                   </div>
                 </div>
@@ -361,4 +371,3 @@ const EntregasList = ({
 };
 
 export default Entregas;
-

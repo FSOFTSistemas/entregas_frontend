@@ -76,8 +76,6 @@ const Dashboard = () => {
       if (!entrega) return;
 
       await axios.put(`https://www.gestao-api.dev.br:4100/api/entregas/${entregaId}`, {
-        produto_id: entrega.produto_id,
-        quantidade: entrega.quantidade,
         descricao: entrega.descricao,
         cliente: entrega.cliente,
         data: entrega.data,
@@ -313,17 +311,21 @@ const Dashboard = () => {
                             Descricao:
                           </p>
                           <CardTitle>{entrega.descricao || 'Não informado'}</CardTitle>
-                          <p className="text-sm text-muted-foreground">
-                            Produto: {entrega.produto.descricao || 'Não informado'}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Quantidade: {entrega.quantidade}
-                          </p>
-                          {user?.tipo_usuario !== 'entregador' && (
-                            <p className="text-sm text-muted-foreground">
-                              Total: {formatCurrency(entrega.quantidade * entrega.produto.preco_venda)}
-                            </p>
-                          )}
+                          <div className="text-sm text-muted-foreground">
+                            <p className="font-semibold">Produtos:</p>
+                            {entrega.produtos && entrega.produtos.length > 0 ? (
+                              entrega.produtos.map((produto) => (
+                                <div key={produto.id} className="mb-1">
+                                  <p>Descrição: {produto.descricao}</p>
+                                  <p>Quantidade: {produto.EntregaProduto.quantidade}</p>
+                                  <p>Preço Unitário: {formatCurrency(produto.EntregaProduto.preco_unitario)}</p>
+                                  <p>Total: {formatCurrency(produto.EntregaProduto.quantidade * produto.EntregaProduto.preco_unitario)}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <p>Sem produtos</p>
+                            )}
+                          </div>
                           <p className="text-sm text-muted-foreground w-full">
                             Data: {formatDateTime(entrega.createdAt)}
                           </p>
@@ -370,20 +372,24 @@ const Dashboard = () => {
                             Descricao:
                           </p>
                           <CardTitle>{entrega.descricao || 'Não informado'}</CardTitle>
-                          <p className="text-sm text-muted-foreground">
-                            Produto: {entrega.produto.descricao || 'Não informado'}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Quantidade: {entrega.quantidade}
-                          </p>
+                          <div className="text-sm text-muted-foreground">
+                            <p className="font-semibold">Produtos:</p>
+                            {entrega.produtos && entrega.produtos.length > 0 ? (
+                              entrega.produtos.map((produto) => (
+                                <div key={produto.id} className="mb-1">
+                                  <p>Descrição: {produto.descricao}</p>
+                                  <p>Quantidade: {produto.EntregaProduto.quantidade}</p>
+                                  <p>Preço Unitário: {formatCurrency(produto.EntregaProduto.preco_unitario)}</p>
+                                  <p>Total: {formatCurrency(produto.EntregaProduto.quantidade * produto.EntregaProduto.preco_unitario)}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <p>Sem produtos</p>
+                            )}
+                          </div>
                           <p className="text-sm text-muted-foreground">
                             Entregador: {entrega.entregador?.nome || 'Não informado'}
                           </p>
-                          {user?.tipo_usuario !== 'entregador' && (
-                            <p className="text-sm text-muted-foreground">
-                              Total: {formatCurrency(entrega.quantidade * entrega.produto.preco_venda)}
-                            </p>
-                          )}
                           <p className="text-sm text-muted-foreground w-full">
                             Data: {formatDateTime(entrega.updatedAt)}
                           </p>

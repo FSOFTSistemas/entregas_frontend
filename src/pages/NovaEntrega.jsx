@@ -22,6 +22,7 @@ export default function NovaEntrega() {
   const [formData, setFormData] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [quantidadeSelecionada, setQuantidadeSelecionada] = useState(1);
+  const [precoUnitarioSelecionado, setPrecoUnitarioSelecionado] = useState(0);
   const [cliente, setCliente] = useState('');
   const [descricao, setDescricao] = useState('');
   const [error, setError] = useState('');
@@ -42,9 +43,14 @@ export default function NovaEntrega() {
 
   const addProduto = () => {
     if (!produtoSelecionado) return;
-    setFormData([...formData, { produto_id: produtoSelecionado.value, quantidade: quantidadeSelecionada }]);
+    setFormData([...formData, { 
+      produto_id: produtoSelecionado.value, 
+      quantidade: quantidadeSelecionada,
+      preco_unitario: precoUnitarioSelecionado
+    }]);
     setProdutoSelecionado(null);
     setQuantidadeSelecionada(1);
+    setPrecoUnitarioSelecionado(0);
   };
 
   const removeProduto = (index) => {
@@ -62,18 +68,14 @@ export default function NovaEntrega() {
       const data = {
         produtos: formData.map(p => ({
           produto_id: p.produto_id,
-          quantidade: parseInt(p.quantidade)
+          quantidade: parseInt(p.quantidade),
+          preco_unitario: parseFloat(p.preco_unitario)
         })),
         cliente,
         descricao,
         data: new Date().toISOString(),
         status: 'pendente',
       };
-
-      if (formData.length === 1) {
-        data.produto_id = formData[0].produto_id;
-        data.quantidade = parseInt(formData[0].quantidade);
-      }
 
       await axios.post('https://www.gestao-api.dev.br:4100/api/entregas', data);
 
@@ -160,6 +162,18 @@ export default function NovaEntrega() {
               </div>
             </div>
             <div className="mt-2">
+              <Label htmlFor="preco_unitario">Preço Unitário</Label>
+              <Input
+                id="preco_unitario"
+                type="number"
+                step="0.01"
+                value={precoUnitarioSelecionado}
+                onChange={e => setPrecoUnitarioSelecionado(parseFloat(e.target.value))}
+                disabled={isSubmitting}
+                placeholder="Preço unitário"
+              />
+            </div>
+            <div className="mt-2">
               <Button
                 className="w-full md:w-auto"
                 type="button"
@@ -179,6 +193,7 @@ export default function NovaEntrega() {
                 <tr>
                   <th className="border px-1 py-1 text-left">Produto</th>
                   <th className="border px-1 py-1 text-left">Quantidade</th>
+                  <th className="border px-1 py-1 text-left">Preço Unitário</th>
                   <th className="border px-1 py-1">Ações</th>
                 </tr>
               </thead>
@@ -189,6 +204,7 @@ export default function NovaEntrega() {
                     <tr key={index}>
                       <td className="border px-1 py-1">{produtoSelecionado ? produtoSelecionado.descricao : 'Não selecionado'}</td>
                       <td className="border px-1 py-1">{item.quantidade}</td>
+                      <td className="border px-1 py-1">{item.preco_unitario}</td>
                       <td className="border px-1 py-1 text-center">
                         <Button variant="destructive" size="sm" onClick={() => removeProduto(index)}>Remover</Button>
                       </td>
