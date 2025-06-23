@@ -6,7 +6,7 @@ import path from 'path'
 import dotenv from 'dotenv';
 dotenv.config();
 
-const useHttps = false;//process.env.HTTPS === 'true';
+const useHttps = true;//process.env.HTTPS === 'true';
 
 // https://vite.dev/config/
 export default defineConfig({

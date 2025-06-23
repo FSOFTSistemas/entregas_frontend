@@ -33,6 +33,7 @@ const Produtos = () => {
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mostrarTotais, setMostrarTotais] = useState(false);
 
   useEffect(() => {
     fetchProdutos();
@@ -126,6 +127,16 @@ const Produtos = () => {
 
   const filteredProdutos = produtos.filter(produto =>
     produto.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Cálculo do total de custo e total de venda do estoque
+  const totalCustoEstoque = produtos.reduce(
+    (total, produto) => total + (produto.preco_custo * produto.estoque),
+    0
+  );
+  const totalVendaEstoque = produtos.reduce(
+    (total, produto) => total + (produto.preco_venda * produto.estoque),
+    0
   );
 
   if (loading) {
@@ -279,6 +290,21 @@ const Produtos = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
+      </div>
+
+      {/* Resumo de estoque total */}
+      <div className="mb-4">
+        <div className="flex justify-end">
+          <Button size="sm" variant="outline" onClick={() => setMostrarTotais(!mostrarTotais)}>
+            {mostrarTotais ? 'Ocultar Totais' : 'Totalizar Estoque'}
+          </Button>
+        </div>
+        {mostrarTotais && (
+          <div className="mt-2 text-left">
+            <strong>Total em Estoque (Custo): {formatCurrency(totalCustoEstoque)}</strong><br />
+            <strong>Total em Estoque (Venda): {formatCurrency(totalVendaEstoque)}</strong>
+          </div>
+        )}
       </div>
 
       {/* Products List */}

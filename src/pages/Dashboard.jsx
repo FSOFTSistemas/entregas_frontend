@@ -74,7 +74,7 @@ const Dashboard = () => {
     try {
       const entrega = entregas.find(e => e.id === entregaId);
       if (!entrega) return;
-
+  
       await api.put(`entregas/${entregaId}`, {
         descricao: entrega.descricao,
         cliente: entrega.cliente,
@@ -82,10 +82,13 @@ const Dashboard = () => {
         status: 'entregue',
         entregador_id: user.id
       });
+  
+      await api.post(`/entregas/baixa-estoque/${entregaId}`);
+  
       fetchEntregas();
       setIsConfirmModalOpen(false);
     } catch (error) {
-      console.error('Erro ao atualizar entrega:', error);
+      console.error('Erro ao atualizar entrega e dar baixa no estoque:', error);
     }
   };
 
@@ -316,10 +319,13 @@ const Dashboard = () => {
                             {entrega.produtos && entrega.produtos.length > 0 ? (
                               entrega.produtos.map((produto) => (
                                 <div key={produto.id} className="mb-1">
-                                  <p>Descrição: {produto.descricao}</p>
-                                  <p>Quantidade: {produto.EntregaProduto.quantidade}</p>
-                                  <p>Preço Unitário: {formatCurrency(produto.EntregaProduto.preco_unitario)}</p>
-                                  <p>Total: {formatCurrency(produto.EntregaProduto.quantidade * produto.EntregaProduto.preco_unitario)}</p>
+                                  <p><strong>{produto.EntregaProduto.quantidade}x</strong> {produto.descricao}</p>
+                                  {user?.tipo_usuario !== 'entregador' && (
+                                    <>
+                                      <p>Preço Unitário: {formatCurrency(produto.EntregaProduto.preco_unitario)}</p>
+                                      <p>Total: {formatCurrency(produto.EntregaProduto.quantidade * produto.EntregaProduto.preco_unitario)}</p>
+                                    </>
+                                  )}
                                 </div>
                               ))
                             ) : (
@@ -377,10 +383,13 @@ const Dashboard = () => {
                             {entrega.produtos && entrega.produtos.length > 0 ? (
                               entrega.produtos.map((produto) => (
                                 <div key={produto.id} className="mb-1">
-                                  <p>Descrição: {produto.descricao}</p>
-                                  <p>Quantidade: {produto.EntregaProduto.quantidade}</p>
-                                  <p>Preço Unitário: {formatCurrency(produto.EntregaProduto.preco_unitario)}</p>
-                                  <p>Total: {formatCurrency(produto.EntregaProduto.quantidade * produto.EntregaProduto.preco_unitario)}</p>
+                                  <p><strong>{produto.EntregaProduto.quantidade}x</strong> {produto.descricao}</p>
+                                  {user?.tipo_usuario !== 'entregador' && (
+                                    <>
+                                      <p>Preço Unitário: {formatCurrency(produto.EntregaProduto.preco_unitario)}</p>
+                                      <p>Total: {formatCurrency(produto.EntregaProduto.quantidade * produto.EntregaProduto.preco_unitario)}</p>
+                                    </>
+                                  )}
                                 </div>
                               ))
                             ) : (

@@ -121,7 +121,15 @@ export default function NovaEntrega() {
                 label: produto.descricao
               }))}
               value={produtoSelecionado}
-              onChange={setProdutoSelecionado}
+              onChange={(selected) => {
+                setProdutoSelecionado(selected);
+                const produtoEncontrado = produtos.find(p => p.id.toString() === selected?.value);
+                if (produtoEncontrado) {
+                  setPrecoUnitarioSelecionado(parseFloat(produtoEncontrado.preco_custo));
+                } else {
+                  setPrecoUnitarioSelecionado(0);
+                }
+              }}
               isDisabled={isSubmitting}
               placeholder="Selecione o produto"
               isClearable
